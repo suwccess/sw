@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.http import JsonResponse, HttpResponse,HttpResponseRedirect
 from models import *
 from hashlib import sha1
+from . import user_decorator
+from df_goods.models import *
 #注册
 def register(request):
     return render(request, 'df_user/register.html')
@@ -73,15 +75,23 @@ def login_handle(request):
         context = {'title': '用户登录', 'error_name': 1, 'error_pwd': 0, 'uname': uname, 'upwd': upwd}
         return render(request, 'df_user/login.html', context)
 #用户中心
-
+@user_decorator.login
 def user_info(request):
     username = request.session.get('user_name')
     # print username
     user = UserInfo.objects.filter(uname=username).first()
-    explain = '无最近浏览'
+    goods_ids=request.COOKIES.get('goods_ids', '')
+    goods_ids1 = goods_ids.split(',')
+    goods_list = []
+    if goods_ids != '':
+        for goods_id in goods_ids1:
+            goods_list.append(GoodsInfo.objects.get(id=int(goods_id)))
+    else:
+        goods_list = []
+    # explain = '无最近浏览'
     context = {'title': '用户中心', 'page_name': 1,
         'user_phone': user.uphone, 'user_address': user.uaddress,
-        'user_name': username, 'explain': explain}
+        'user_name': username, 'goods_list': goods_list}
     # print context
     # context = explain
     return render(request, 'df_user/user_center_info.html', context)
