@@ -1,10 +1,12 @@
 #coding=utf-8
 from django.shortcuts import render, redirect, HttpResponseRedirect
-from django.http import JsonResponse, HttpResponse,HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.core.paginator import Paginator
 from models import *
 from hashlib import sha1
 from . import user_decorator
 from df_goods.models import *
+from df_order.models import *
 #注册
 def register(request):
     return render(request, 'df_user/register.html')
@@ -99,3 +101,35 @@ def user_info(request):
 def logout(request):
     request.session.flush() #清空当前用户的所有session
     return HttpResponseRedirect('/user/login')
+#全部订单
+@user_decorator.login
+def order(request, index):
+    user_id = request.session['user_id']
+    orders_list = OrderInfo.objects.filter(user_id=int(user_id)).order_by('-odate')
+    paginator = Paginator(orders_list, 2)
+    page = paginator.page(int(index))
+    context = {
+        'paginator': paginator,
+        'page': page,
+        # 'orders_list':orders_list,
+        'title': "用户中心",
+        'page_name': 1,
+    }
+    return render(request, 'df_user/user_center_order.html', context)
+
+#收货地址
+@user_decorator.login
+def site(request):
+    user = UserInfo.objects.get(id=request.session['user_id'])
+    if request.method == "POST":
+        user.ushou = request.POST.get('ushou')
+        user.uaddress = request.POST.get('uaddress')
+        user.uyoubian = request.POST.get('uyoubian')
+        user.uphone = request.POST.get('uphone')
+        user.save()
+    context = {
+        'page_name': 1,
+        'title': '用户中心',
+        'user': user,
+    }
+    return render(request, 'df_user/user_center_site.html', context)

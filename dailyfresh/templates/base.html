@@ -24,7 +24,7 @@
                                 <span>|</span>
                                 <a href="/user/info/">用户中心</a>
                                 <span>|</span>
-                                <a href="/user/info/">我的购物车</a>
+                                <a href="/cart/">我的购物车</a>
                                 <span>|</span>
                                 <a href="/user/info/">我的订单</a>
 
@@ -39,26 +39,32 @@
             {% endif %}
             <div class="search_con fl">
                  <script>
-                    $(function () {
-                        $('.input_btn').click(function () {
-                            q = $('.input_text').val();
-                            if(q==""){
-                            alert("请输入搜索内容");
-                            }
-                            else{
-                                location.href = '/user/info/'
-                            }
-                        })
-                    })
+                    // $(function () {
+                    //     $('.input_btn').click(function () {
+                    //         q = $('.input_text').val();
+                    //         if(q==""){
+                    //         alert("请输入搜索内容");
+                    //         }
+                    //         else{
+                    //             location.href = '/search/'
+                    //         }
+                    //     })
+                    // })
 
                 </script>
-                <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
-                <input type="button" class="input_btn fr" name="" value="搜索">
+<!--                <form method='get' action="/search/" target="_blank">-->
+<!--                    <input type="text" name="q">-->
+<!--                    <input type="submit" value="查询">-->
+<!--                </form>-->
+                <form method='get' action="/search/" target="_blank">
+                    <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+                    <input type="submit" class="input_btn fr" value="搜索">
+                </form>
             </div>
 
             {% if guest_cart == 1 %}
                 <div class="guest_cart fr">
-                    <a href="/user/info/" class="cart_name fl">我的购物车</a>
+                    <a href="/cart/" class="cart_name fl">我的购物车</a>
                     <div class="goods_count fl" id="show_count">{{ cart_num }}</div>
                 </div>
             {% endif %}
